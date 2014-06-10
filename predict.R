@@ -10,7 +10,7 @@ add.months= function(date,n) seq(date, by = paste (n, "months"), length = 2)[2]
 
 drv <- dbDriver("PostgreSQL")
 
-con <- dbConnect(drv, user='postgres', password='postgres', host='127.0.0.1', dbname="bluelytics")
+con <- dbConnect(drv, dbname="bluelytics")
 dbSendQuery(con,"SET datestyle TO iso")
 rs <- dbSendQuery(con, "select avg(value_sell) as value, date_trunc('month', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' group by date_trunc('month', date) order by date;")
 base_data <- fetch(rs,n=-1)

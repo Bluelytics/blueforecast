@@ -1,0 +1,4 @@
+db_username = 'postgres'
+db_password = 'postgres'
+db_hostname = '127.0.0.1'
+path_output = '/tmp'

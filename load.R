@@ -1,14 +1,14 @@
 
 library(forecast)
 
-dat <- read.csv('/home/sicarul/dev/blueforecast/export_dolarblue.csv')
+dat <- read.csv('/home/sicarul/dev/blueforecast/export_blue.csv')
 
 blue <- subset(dat, source_id == 'la_nacion')
 
 agg <- aggregate(blue$value_sell, by=list(strftime(blue$date,format="%y/%m")), FUN=mean)
 
 base = agg[1:36,]
-test = agg[37:42,]
+test = agg[37:46,]
 
 bts <- ts(base$x, start=c(2011, 1), frequency=12)
 tts <- ts(test$x, start=c(2014, 1), frequency=12)
@@ -35,7 +35,7 @@ plot(fcast_ar)
 ac_ar <- accuracy(fcast_ar, tts)
 ac_ar
 
-fit_arima <- auto.arima(bts, trace=TRUE, allowdrift=TRUE, D=1)
+fit_arima <- auto.arima(bts, trace=TRUE, allowdrift=TRUE)
 #fit_arima <- Arima(bts, order=c(0,1,1), seasonal=c(0,1,0))
 fcast_arima <- forecast(fit_arima, h=12)
 ac_arima <- accuracy(fcast_arima, tts)
@@ -47,3 +47,4 @@ fit_ets <- ets(bts)
 fcast_ets <- forecast(fit_ets, h=12)
 plot(fcast_ets)
 ac_ets <- accuracy(fcast_ets, tts)
+lines(tts, col="purple", lwd=2)

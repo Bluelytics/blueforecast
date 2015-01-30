@@ -1,3 +1,4 @@
 local_config.R
 *csv
 *json
+.Rproj.user

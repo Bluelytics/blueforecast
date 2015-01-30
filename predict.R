@@ -12,11 +12,19 @@ drv <- dbDriver("PostgreSQL")
 
 con <- dbConnect(drv, dbname="bluelytics")
 dbSendQuery(con,"SET datestyle TO iso")
-rs <- dbSendQuery(con, "select avg(value_sell) as value, date_trunc('month', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' group by date_trunc('month', date) order by date;")
+rs <- dbSendQuery(con, "select avg(value_sell) as value, date_trunc('day', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' group by date_trunc('day', date) order by date;")
 base_data <- fetch(rs,n=-1)
 
 dbDisconnect(con)
 dbUnloadDriver(drv)
+
+agg <- setNames(aggregate(base_data$value_sell, by=list(as.Date(base_data$date)), FUN=mean), c('date', 'x'))
+
+days <- data.frame ( date = as.Date(seq.POSIXt(ymd(min(agg$date)), ymd(max(agg$date)), by = "1 day")))
+
+final <- na.locf(merge(days, agg, by="date", all.x=TRUE))
+final$x <- as.numeric(final$x)
+
 
 start_date <- base_data$date[1]
 start_year <- as.numeric(strftime(start_date, format="%Y"))

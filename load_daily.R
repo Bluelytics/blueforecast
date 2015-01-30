@@ -80,14 +80,6 @@ lines(tts, col="purple", lwd=2)
 resid <-residuals(fit)
 ks.test(resid, 'pnorm', mean(resid), sd(resid))
 
-fit_ar <- ar(bts, method = "mle", n.ahead=365)
-fcast_ar <- forecast(fit_ar, h=365)
-plot(fcast_ar)
-ac_ar <- accuracy(fcast_ar, tts)
-ac_ar
-
-
-
 fit_arima <- auto.arima(bts, d=2, max.p=15, max.q=15,  xreg=picos, ic="bic", trace=TRUE)
 summary(fit_arima)
 plot(fit_arima$x,col="red")
@@ -104,6 +96,23 @@ ks.test(resid, 'pnorm', mean(resid), sd(resid))
 
 
 fit_ets <- stlf(bts, method="ets", h=30)
+fcast_ets <- forecast(fit_ets, n.head=30)
+summary(fit_ets)
+
+plot(fit_ets$x,col="red")
+lines(fitted(fit_ets),col="blue")
+plot(fcast_ets)
+lines(fitted(fit_ets),col="green")
+lines(tts, col="purple", lwd=2)
+
+ac_ets <- accuracy(fcast_ets, tts)
+ac_ets
+
+
+resid <-residuals(fit)
+ks.test(resid, 'pnorm', mean(resid), sd(resid))
+
+fit_ets <- ets(bts)
 fcast_ets <- forecast(fit_ets, n.head=30)
 summary(fit_ets)
 plot(fcast_ets)

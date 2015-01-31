@@ -6,6 +6,7 @@ if (file.exists('local_config.R')){
 library(forecast)
 library(RPostgreSQL)
 library(RJSONIO)
+library(lubridate)
 
 drv <- dbDriver("PostgreSQL")
 

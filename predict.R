@@ -46,8 +46,8 @@ data_forecasted = data.frame(lower_95, lower_80, mean, upper_80, upper_95)
 dates_history <- seq(basedate, by='day', length.out=nrow(days))
 dates_forecasted <- seq(as.Date(tail(dates_history, n=1))+1, by='day', length.out=horizon)
 
-export_history <- strftime(dates_history, '%m/%Y')
-export_forecasted <- strftime(dates_forecasted, '%m/%Y')
+export_history <- strftime(dates_history, '%d/%m/%Y')
+export_forecasted <- strftime(dates_forecasted, '%d/%m/%Y')
 
 json_forecasted <- toJSON(data_forecasted)
 json_history <- toJSON(data.frame(history=base_data$value))

@@ -12,7 +12,7 @@ drv <- dbDriver("PostgreSQL")
 
 con <- dbConnect(drv, dbname="bluelytics")
 dbSendQuery(con,"SET datestyle TO iso")
-rs <- dbSendQuery(con, "select avg(value_sell) as value, date_trunc('day', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' group by date_trunc('day', date) order by date;")
+rs <- dbSendQuery(con, "select median(value_sell) as value, date_trunc('day', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' group by date_trunc('day', date) order by date;")
 base_data <- fetch(rs,n=-1)
 
 dbDisconnect(con)

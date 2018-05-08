@@ -1,5 +1,6 @@
+
 if (file.exists('local_config.R')){
-  source('local_config.R')  
+  source('local_config.R')
 }
 
 
@@ -7,6 +8,7 @@ library(forecast)
 library(RPostgreSQL)
 library(RJSONIO)
 library(lubridate)
+library(zoo)
 
 drv <- dbDriver("PostgreSQL")
 
@@ -20,7 +22,7 @@ dbUnloadDriver(drv)
 
 agg <- setNames(aggregate(base_data$value, by=list(as.Date(base_data$date)), FUN=mean), c('date', 'x'))
 
-days <- data.frame ( date = as.Date(seq.POSIXt(ymd(min(agg$date)), ymd(max(agg$date)), by = "1 day")))
+days <- data.frame ( date = as.Date(seq.POSIXt(as.POSIXlt(min(agg$date)), as.POSIXlt(max(agg$date)), by = "1 day")))
 
 final <- na.locf(merge(days, agg, by="date", all.x=TRUE))
 final$x <- as.numeric(final$x)

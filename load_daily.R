@@ -3,7 +3,7 @@ library(forecast)
 library(tseries)
 library(lubridate)
 
-blue <- read.csv('export_blue.csv')
+blue <- read_csv('export_blue.csv')
 
 agg <- setNames(aggregate(blue$value_sell, by=list(as.Date(blue$date)), FUN=mean), c('date', 'x'))
 
@@ -12,10 +12,11 @@ days <- data.frame ( date = as.Date(seq.POSIXt(ymd(min(agg$date)), ymd(max(agg$d
 final <- na.locf(merge(days, agg, by="date", all.x=TRUE))
 final$x <- as.numeric(final$x)
 
+offset = 730
+
 numtest = round(sqrt(length(final$x)-offset))
 numbase = length(final$x)-numtest
 
-offset = 730
 
 base = final[offset:numbase,]
 test = final[(numbase+1):length(final$x),]

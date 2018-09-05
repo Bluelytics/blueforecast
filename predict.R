@@ -1,24 +1,27 @@
 
-if (file.exists('local_config.R')){
-  source('local_config.R')
-}
-
-
 library(forecast)
-library(RPostgreSQL)
 library(RJSONIO)
 library(lubridate)
 library(zoo)
+library(tidyverse)
 
-drv <- dbDriver("PostgreSQL")
 
-con <- dbConnect(drv, dbname="bluelytics")
-dbSendQuery(con,"SET datestyle TO iso")
-rs <- dbSendQuery(con, "select median(value_sell) as value, date_trunc('day', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' and date >= '2013-01-01' group by date_trunc('day', date) order by date;")
-base_data <- fetch(rs,n=-1)
-
-dbDisconnect(con)
-dbUnloadDriver(drv)
+if (file.exists('local_config.R')){
+  library(RPostgreSQL)
+  source('local_config.R')
+  
+  drv <- dbDriver("PostgreSQL")
+  
+  con <- dbConnect(drv, dbname="bluelytics")
+  dbSendQuery(con,"SET datestyle TO iso")
+  rs <- dbSendQuery(con, "select median(value_sell) as value, date_trunc('day', date) as date from dolar_blue_dolarblue where source_id <> 'oficial' and date >= '2013-01-01' group by date_trunc('day', date) order by date;")
+  base_data <- fetch(rs,n=-1)
+  
+  dbDisconnect(con)
+  dbUnloadDriver(drv)
+}else{
+  base_data = read_csv('export_blue.csv')
+}
 
 agg <- setNames(aggregate(base_data$value, by=list(as.Date(base_data$date)), FUN=mean), c('date', 'x'))
 
@@ -31,7 +34,7 @@ basedate = min(ymd(final$date))
 
 fts <- ts(final$x, start=c(year(basedate), yday(basedate)), frequency=365)
 
-fit_arima <- Arima(fts, order=c(2,1,2), include.drift=TRUE,  method="ML")
+fit_arima <- Arima(fts, order=c(4,2,3))
 
 horizon <- 60
 
